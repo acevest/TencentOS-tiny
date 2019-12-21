@@ -17,12 +17,39 @@
 
 #include <tos.h>
 
+void TIMER1_COMPA_vect() __attribute__ ((signal,used, externally_visible));
+void TIMER1_COMPA_vect()
+{
+}
+
 __KERNEL__ void cpu_systick_init(k_cycle_t cycle_per_tick)
 {
+    //set timer1 interrupt at 100Hz
+    TCCR1A = 0;// set entire TCCR1A register to 0
+    TCCR1B = 0;// same for TCCR1B
+    TCNT1  = 0;//initialize counter value to 0
+    // set compare match register for 100Hz increments
+    OCR1A = 155; // = (16*10^6) / (1024*100Hz) - 1 (must be <65536)
+    // turn on CTC mode
+    TCCR1B |= (1 << WGM12);
+    // Set CS10 and CS12 bits for 1024 prescaler
+    TCCR1B |= (1 << CS12) | (1 << CS10);
+    // enable timer compare interrupt
+    TIMSK1 |= (1 << OCIE1A);
 }
 
 __KERNEL__ void cpu_init(void) {
 
+}
+
+__API__ void tos_cpu_int_disable(void)
+{
+    port_int_disable();
+}
+
+__API__ void tos_cpu_int_enable(void)
+{
+    port_int_enable();
 }
 
 __API__ cpu_cpsr_t tos_cpu_cpsr_save(void)
@@ -89,7 +116,7 @@ __KERNEL__ k_stack_t *cpu_task_stk_init(void *entry,
         *(sp + i) = ((i / 10) << 4) | (i % 10);
     }
 
-    regs->SREG= (cpu_data_t)0;
+    regs->sreg = (cpu_data_t)0;
 
     return (k_stack_t*)sp;
 }

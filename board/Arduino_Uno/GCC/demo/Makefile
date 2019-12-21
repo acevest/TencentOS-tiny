@@ -40,7 +40,8 @@ KERNEL_SRC =  \
         C_SOURCES += $(KERNEL_SRC)
 
 ARCH_SRC =  \
-        ${wildcard $(TOP_DIR)/arch/avr/*.c}
+        ${wildcard $(TOP_DIR)/arch/avr/atmega328p/*.c} \
+        ${wildcard $(TOP_DIR)/arch/avr/common/*.c}
         C_SOURCES += $(ARCH_SRC)
 
 HAL_DRIVER_SRC =  \
@@ -136,7 +137,7 @@ LDSCRIPT =
 # libraries
 LIBS = -lc -lm
 LIBDIR = 
-LDFLAGS = $(MCU) $(LIBDIR) $(LIBS) -Wl,-Map=$(BUILD_DIR)/$(TARGET).map,--cref -Wl,--gc-sections -nostartfiles
+#LDFLAGS = $(MCU) $(LIBDIR) $(LIBS) -Wl,-Map=$(BUILD_DIR)/$(TARGET).map,--cref -Wl,--gc-sections -nostartfiles
 
 # default action: build all
 all: $(BUILD_DIR)/$(TARGET).elf $(BUILD_DIR)/$(TARGET).hex $(BUILD_DIR)/$(TARGET).bin
